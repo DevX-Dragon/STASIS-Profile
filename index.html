@@ -385,19 +385,21 @@ fileInput.addEventListener('change', e => {
 });
 
 function loadImage(file) {
-  const reader = new FileReader();
-  reader.onload = ev => {
-    const img = new Image();
-    img.onload = () => {
-      currentImage = img;
-      controls.classList.add('visible');
-      previewArea.classList.add('visible');
-      render();
-      statusBar.textContent = `loaded: ${file.name}`;
-    };
-    img.src = ev.target.result;
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+  img.onload = () => {
+    currentImage = img;
+    controls.classList.add('visible');
+    previewArea.classList.add('visible');
+    render();
+    statusBar.textContent = `loaded: ${file.name}`;
+    URL.revokeObjectURL(url);
   };
-  reader.readAsDataURL(file);
+  img.onerror = () => {
+    statusBar.textContent = 'error loading image — try another file';
+    URL.revokeObjectURL(url);
+  };
+  img.src = url;
 }
 
 // Controls
